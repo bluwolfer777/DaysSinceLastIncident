@@ -1,16 +1,19 @@
-"""LDAP authentication against samt.lan — verifies credentials and group membership."""
+"""LDAP authentication against samt.lan — verifies credentials and group membership.
+
+Uses SIMPLE auth (UPN format: username@domain) to avoid NTLM's MD4 dependency,
+which is disabled by default in OpenSSL 3.x.
+"""
 
 import os
 import ssl
 
-from ldap3 import ALL, NTLM, SUBTREE, Server, Connection, Tls
+from ldap3 import ALL, SIMPLE, SUBTREE, Server, Connection, Tls
 from ldap3.core.exceptions import LDAPBindError, LDAPException
 
-LDAP_SERVER       = os.environ.get("LDAP_SERVER",        "samt.lan")
-LDAP_DOMAIN       = os.environ.get("LDAP_DOMAIN",        "SAMT")
-LDAP_BASE_DN      = os.environ.get("LDAP_BASE_DN",       "dc=samt,dc=lan")
+LDAP_SERVER         = os.environ.get("LDAP_SERVER",        "samt.lan")
+LDAP_BASE_DN        = os.environ.get("LDAP_BASE_DN",       "dc=samt,dc=lan")
 LDAP_REQUIRED_GROUP = os.environ.get("LDAP_REQUIRED_GROUP", "GG_Sistemisti")
-LDAP_USE_SSL      = os.environ.get("LDAP_USE_SSL", "false").lower() == "true"
+LDAP_USE_SSL        = os.environ.get("LDAP_USE_SSL", "false").lower() == "true"
 
 
 def _make_server() -> Server:
@@ -23,7 +26,7 @@ def _make_server() -> Server:
 def ldap_check(username: str, password: str) -> tuple[bool, str]:
     """
     Attempt to:
-      1. Bind to the domain controller as DOMAIN\\username with the given password.
+      1. Bind to the DC using SIMPLE auth with UPN format (username@samt.lan).
       2. Search for the user's memberOf attribute.
       3. Confirm membership in LDAP_REQUIRED_GROUP.
 
@@ -32,13 +35,16 @@ def ldap_check(username: str, password: str) -> tuple[bool, str]:
     if not username or not password:
         return False, "Username and password are required."
 
+    # UPN format: jsmith@samt.lan — works with SIMPLE auth, no MD4 required
+    upn = f"{username}@{LDAP_SERVER}"
+
     try:
         server = _make_server()
         conn = Connection(
             server,
-            user=f"{LDAP_DOMAIN}\\{username}",
+            user=upn,
             password=password,
-            authentication=NTLM,
+            authentication=SIMPLE,
             auto_bind=True,
             receive_timeout=10,
         )

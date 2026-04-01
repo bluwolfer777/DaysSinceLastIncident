@@ -82,7 +82,6 @@ Authentication is handled in `auth.py`. The following environment variables cont
 | Variable | Default | Description |
 |---|---|---|
 | `LDAP_SERVER` | `samt.lan` | Hostname or IP of the domain controller |
-| `LDAP_DOMAIN` | `SAMT` | NetBIOS domain name used for NTLM bind (`DOMAIN\username`) |
 | `LDAP_BASE_DN` | `dc=samt,dc=lan` | Base DN for user searches |
 | `LDAP_REQUIRED_GROUP` | `GG_Sistemisti` | CN of the group that grants admin access |
 | `LDAP_USE_SSL` | `false` | Set to `true` to connect on port 636 with LDAPS |
@@ -90,10 +89,12 @@ Authentication is handled in `auth.py`. The following environment variables cont
 ### How authentication works
 
 1. The user submits their domain username and password on `/admin/login`.
-2. `auth.py` opens an NTLM connection to the domain controller as `SAMT\<username>` using the submitted password. A failed bind means wrong credentials.
+2. `auth.py` binds to the DC using **SIMPLE auth** with UPN format (`username@samt.lan`). This avoids NTLM's MD4 dependency, which is disabled by default in OpenSSL 3.x.
 3. After a successful bind, the user's `memberOf` attribute is retrieved.
 4. The CN of each group is compared (case-insensitive) against `LDAP_REQUIRED_GROUP`. Access is granted only if a match is found.
 5. On success, `session["admin"] = True` is set; all subsequent admin requests verify this flag.
+
+> **Note on SIMPLE auth:** credentials are sent base64-encoded. Use `LDAP_USE_SSL=true` (LDAPS, port 636) on untrusted networks to encrypt the connection.
 
 > **Note on nested groups:** the check uses direct `memberOf` membership only. If `GG_Sistemisti` is a member of another group and users are added to the parent group, they will not pass the check. Add them directly to `GG_Sistemisti` or open an issue to add recursive resolution.
 
