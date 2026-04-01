@@ -1,0 +1,20 @@
+services:
+  dsli:
+    build: .
+    container_name: days-since-last-incident
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist the SQLite database and secret key outside the container
+      - dsli_data:/app/instance
+    environment:
+      # LDAP settings — override here or in a .env file
+      LDAP_SERVER: "samt.lan"
+      LDAP_DOMAIN: "SAMT"
+      LDAP_BASE_DN: "dc=samt,dc=lan"
+      LDAP_REQUIRED_GROUP: "GG_Sistemisti"
+      # LDAP_USE_SSL: "true"   # uncomment to use LDAPS (port 636)
+
+volumes:
+  dsli_data:
