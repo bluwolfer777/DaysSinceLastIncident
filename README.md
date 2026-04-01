@@ -1,20 +1,20 @@
 # Days Since Last Incident
 
-Mostra su un TV quanti giorni sono passati dall'ultimo incidente.  
-Chi ha accesso admin (autenticato via Active Directory) può aggiungere e cancellare record. Quando viene aggiunto un record, il TV si aggiorna automaticamente.
+Displays on a TV how many days have passed since the last incident.  
+Admins authenticated via Active Directory can add and delete records. When a record is added, the TV updates automatically.
 
 ---
 
-## Installazione rapida
+## Quick install
 
-### Requisiti
+### Requirements
 
-- Un PC/server Linux con **Docker** installato
-- Raggiungibilità del domain controller Active Directory dalla macchina che ospita l'app
+- A Linux PC/server with **Docker** installed
+- Network access to your Active Directory domain controller from the machine running the app
 
 ---
 
-### Passo 1 — Scarica il progetto
+### Step 1 — Clone the repository
 
 ```bash
 git clone https://github.com/bluwolfer777/DaysSinceLastIncident.git
@@ -23,83 +23,83 @@ cd DaysSinceLastIncident
 
 ---
 
-### Passo 2 — Configura i dati LDAP
+### Step 2 — Configure LDAP
 
-Apri il file `docker-compose.yml` con un editor di testo e modifica le quattro righe sotto `environment`:
+Open `docker-compose.yml` with a text editor and fill in the four lines under `environment`:
 
 ```yaml
 environment:
-  LDAP_SERVER: "dc01.tuodominio.local"      # hostname o IP del domain controller
-  LDAP_DOMAIN: "TUODOMINIO"                 # nome NetBIOS del dominio (tutto maiuscolo)
-  LDAP_BASE_DN: "dc=tuodominio,dc=local"    # base DN del tuo AD
-  LDAP_REQUIRED_GROUP: "GG_Sistemisti"      # gruppo AD che può fare login
+  LDAP_SERVER: "dc01.yourdomain.local"    # hostname or IP of the domain controller
+  LDAP_DOMAIN: "YOURDOMAIN"              # NetBIOS domain name (uppercase)
+  LDAP_BASE_DN: "dc=yourdomain,dc=local" # base DN of your AD
+  LDAP_REQUIRED_GROUP: "IT_Admins"       # AD group allowed to log in
 ```
 
-> **Esempio reale:**  
-> Se il tuo dominio è `azienda.lan` e il DC si chiama `dc01.azienda.lan`:
+> **Real-world example:**  
+> If your domain is `company.lan` and the DC is `dc01.company.lan`:
 > ```yaml
-> LDAP_SERVER: "dc01.azienda.lan"
-> LDAP_DOMAIN: "AZIENDA"
-> LDAP_BASE_DN: "dc=azienda,dc=lan"
-> LDAP_REQUIRED_GROUP: "GG_Sistemisti"
+> LDAP_SERVER: "dc01.company.lan"
+> LDAP_DOMAIN: "COMPANY"
+> LDAP_BASE_DN: "dc=company,dc=lan"
+> LDAP_REQUIRED_GROUP: "IT_Admins"
 > ```
 
 ---
 
-### Passo 3 — Avvia l'applicazione
+### Step 3 — Start the application
 
 ```bash
 docker-compose up -d
 ```
 
-L'app è pronta. Apri il browser su `http://localhost:5000`.
+The app is ready. Open your browser at `http://localhost:5000`.
 
-> Se vuoi usare un'altra porta (es. 8080), cambia `"5000:5000"` in `"8080:5000"` nel `docker-compose.yml`.
-
----
-
-### Passo 4 — Punta il TV sulla dashboard
-
-Sul TV (o su qualsiasi browser) apri:
-
-```
-http://<IP-del-server>:5000
-```
-
-La pagina si aggiorna da sola ogni volta che viene registrato un nuovo incidente.
+> To use a different port (e.g. 8080), change `"5000:5000"` to `"8080:5000"` in `docker-compose.yml`.
 
 ---
 
-### Passo 5 — Accedi al pannello admin
+### Step 4 — Point the TV at the dashboard
 
-Dal tuo PC (non dal TV), apri:
+On the TV (or any browser) open:
 
 ```
-http://<IP-del-server>:5000/admin/login
+http://<server-ip>:5000
 ```
 
-Inserisci le tue credenziali di dominio (username senza `DOMINIO\`, solo il nome utente).  
-Devi essere membro del gruppo AD configurato al Passo 2.
+The page reloads automatically every time a new incident is recorded.
 
 ---
 
-## Comandi utili
+### Step 5 — Access the admin panel
 
-| Operazione | Comando |
+From your PC (not the TV), open:
+
+```
+http://<server-ip>:5000/admin/login
+```
+
+Enter your domain credentials (username only — no `DOMAIN\` prefix).  
+You must be a member of the AD group configured in Step 2.
+
+---
+
+## Useful commands
+
+| Action | Command |
 |---|---|
-| Avviare l'app | `docker-compose up -d` |
-| Fermare l'app | `docker-compose down` |
-| Vedere i log in tempo reale | `docker logs -f days-since-last-incident` |
-| Riavviare dopo una modifica alla config | `docker-compose down && docker-compose up -d` |
-| Aggiornare all'ultima versione | `git pull && docker-compose up -d --build` |
+| Start the app | `docker-compose up -d` |
+| Stop the app | `docker-compose down` |
+| View live logs | `docker logs -f days-since-last-incident` |
+| Restart after a config change | `docker-compose down && docker-compose up -d` |
+| Update to the latest version | `git pull && docker-compose up -d --build` |
 
 ---
 
-## Usare l'immagine già pronta (senza clonare il repo)
+## Using the pre-built image (no need to clone the repo)
 
-Se non vuoi clonare il repo, puoi usare l'immagine già compilata da GitHub Container Registry.
+If you don't want to clone the repository, you can use the image published on GitHub Container Registry.
 
-Crea un file `docker-compose.yml` con questo contenuto:
+Create a `docker-compose.yml` file with the following content:
 
 ```yaml
 services:
@@ -112,31 +112,31 @@ services:
     volumes:
       - dsli_data:/app/instance
     environment:
-      LDAP_SERVER: "dc01.tuodominio.local"
-      LDAP_DOMAIN: "TUODOMINIO"
-      LDAP_BASE_DN: "dc=tuodominio,dc=local"
-      LDAP_REQUIRED_GROUP: "GG_Sistemisti"
+      LDAP_SERVER: "dc01.yourdomain.local"
+      LDAP_DOMAIN: "YOURDOMAIN"
+      LDAP_BASE_DN: "dc=yourdomain,dc=local"
+      LDAP_REQUIRED_GROUP: "IT_Admins"
 
 volumes:
   dsli_data:
 ```
 
-Poi:
+Then run:
 
 ```bash
 docker-compose up -d
 ```
 
-Docker scarica l'immagine automaticamente e l'app parte.
+Docker will pull the image automatically and the app will start.
 
 ---
 
-## Dove vengono salvati i dati
+## Where data is stored
 
-Il database SQLite è salvato in un volume Docker chiamato `dsli_data`.  
-I dati **non vanno persi** se fermi o aggiorni il container.
+The SQLite database is stored in a Docker volume called `dsli_data`.  
+Data is **not lost** when you stop or update the container.
 
-Per fare un backup manuale del database:
+To manually back up the database:
 
 ```bash
 docker cp days-since-last-incident:/app/instance/incidents.db ./backup_incidents.db
@@ -144,31 +144,31 @@ docker cp days-since-last-incident:/app/instance/incidents.db ./backup_incidents
 
 ---
 
-## Opzioni avanzate
+## Advanced options
 
-| Variabile d'ambiente | Descrizione | Default |
+| Environment variable | Description | Default |
 |---|---|---|
-| `LDAP_SERVER` | Hostname o IP del domain controller | `ldap.example.com` |
-| `LDAP_DOMAIN` | Nome NetBIOS del dominio | `EXAMPLE` |
-| `LDAP_BASE_DN` | Base DN per la ricerca utenti in AD | `dc=example,dc=com` |
-| `LDAP_REQUIRED_GROUP` | Gruppo AD richiesto per l'accesso admin | `IT_Administrators` |
-| `LDAP_USE_SSL` | `true` per usare LDAPS (porta 636) | `false` |
+| `LDAP_SERVER` | Hostname or IP of the domain controller | `ldap.example.com` |
+| `LDAP_DOMAIN` | NetBIOS domain name | `EXAMPLE` |
+| `LDAP_BASE_DN` | Base DN for user searches in AD | `dc=example,dc=com` |
+| `LDAP_REQUIRED_GROUP` | AD group required for admin access | `IT_Administrators` |
+| `LDAP_USE_SSL` | Set to `true` to use LDAPS (port 636) | `false` |
 
-> **Nota su `LDAP_USE_SSL`:** se il DC usa un certificato self-signed o di una CA interna, installa il certificato nel sistema prima di abilitare SSL. Su reti interne senza SSL, le credenziali viaggiano in chiaro — accettabile solo su LAN trusted.
+> **Note on `LDAP_USE_SSL`:** if the DC uses a self-signed or internal CA certificate, install the certificate in the system trust store before enabling SSL. Without SSL on a trusted internal LAN, credentials are sent in plaintext — acceptable only on private networks.
 
 ---
 
-## Struttura del progetto
+## Project structure
 
 ```
-app.py              # applicazione Flask
-auth.py             # autenticazione LDAP
-requirements.txt    # dipendenze Python
+app.py              # Flask application
+auth.py             # LDAP authentication
+requirements.txt    # Python dependencies
 Dockerfile
 docker-compose.yml
 templates/
-  dashboard.html    # schermata pubblica per il TV
-  login.html        # pagina di login admin
-  admin.html        # pannello di gestione incidenti
-instance/           # generato automaticamente — contiene DB e chiave di sessione
+  dashboard.html    # public TV display
+  login.html        # admin login page
+  admin.html        # incident management panel
+instance/           # auto-created at runtime — contains the DB and session key
 ```
