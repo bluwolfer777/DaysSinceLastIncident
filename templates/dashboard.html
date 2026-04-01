@@ -13,10 +13,11 @@
       --bg:      #0d1117;
       --surface: #161b22;
       --border:  #30363d;
-      --muted:   #8b949e;
-      --text:    #e6edf3;
+      --muted:   #c9d1d9;
+      --subtle:  #8b949e;
+      --text:    #f0f6fc;
       --green:   #3fb950;
-      --yellow:  #d29922;
+      --yellow:  #e3b341;
       --red:     #f85149;
     }
 
@@ -43,7 +44,7 @@
       font-size: clamp(1rem, 2.5vw, 1.4rem);
       text-transform: uppercase;
       letter-spacing: 0.25em;
-      color: var(--muted);
+      color: var(--text);
       font-weight: 600;
     }
 
@@ -61,7 +62,7 @@
 
     .hero__sublabel {
       font-size: clamp(0.9rem, 2vw, 1.2rem);
-      color: var(--muted);
+      color: var(--text);
       letter-spacing: 0.1em;
     }
 
@@ -87,7 +88,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: clamp(0.8rem, 1.5vw, 1rem);
+      font-size: clamp(0.85rem, 1.5vw, 1.05rem);
     }
 
     thead th {
@@ -142,7 +143,7 @@
       text-align: center;
       padding: 1rem;
       font-size: 0.75rem;
-      color: var(--border);
+      color: var(--subtle);
     }
 
     /* ---- Reload flash ---- */
@@ -204,7 +205,7 @@
         {% for inc in incidents %}
         <tr>
           <td>
-            {{ inc.occurred_on }}
+            {{ inc.occurred_on | eu_date }}
             {% if loop.first %}<span class="badge-latest">latest</span>{% endif %}
           </td>
           <td>{{ inc.perpetrator }}</td>

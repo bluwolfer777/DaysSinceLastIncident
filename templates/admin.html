@@ -11,18 +11,18 @@
     .navbar-brand { color: #e6edf3 !important; font-weight: 700; }
     .card { background: #161b22; border: 1px solid #30363d; }
     .card-header { background: #1c2128; border-bottom: 1px solid #30363d; color: #e6edf3; font-weight: 600; }
-    .form-label { color: #8b949e; }
-    .form-control, .form-select { background: #0d1117; border-color: #30363d; color: #e6edf3; }
-    .form-control:focus { background: #0d1117; border-color: #58a6ff; color: #e6edf3; box-shadow: 0 0 0 3px rgba(88,166,255,.15); }
-    .form-control::placeholder { color: #484f58; }
-    .table { --bs-table-color: #8b949e; --bs-table-bg: transparent; --bs-table-border-color: #30363d; }
-    .table thead th { color: #484f58; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid #30363d; }
-    .table tbody tr:first-child td { color: #e6edf3; font-weight: 600; }
+    .form-label { color: #c9d1d9; }
+    .form-control, .form-select { background: #0d1117; border-color: #30363d; color: #f0f6fc; }
+    .form-control:focus { background: #0d1117; border-color: #58a6ff; color: #f0f6fc; box-shadow: 0 0 0 3px rgba(88,166,255,.15); }
+    .form-control::placeholder { color: #6e7681; }
+    .table { --bs-table-color: #c9d1d9; --bs-table-bg: transparent; --bs-table-border-color: #30363d; }
+    .table thead th { color: #8b949e; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid #30363d; }
+    .table tbody tr:first-child td { color: #f0f6fc; font-weight: 600; }
     .btn-success { background: #238636; border-color: #238636; }
     .btn-success:hover { background: #2ea043; border-color: #2ea043; }
     .btn-outline-danger { --bs-btn-color: #f85149; --bs-btn-border-color: #f85149; --bs-btn-hover-bg: #f85149; }
     .badge-latest { font-size: 0.65em; background: #da3633; padding: .15em .45em; border-radius: 4px; font-weight: 700; vertical-align: middle; margin-left: .3rem; }
-    .text-muted { color: #484f58 !important; }
+    .text-muted { color: #8b949e !important; }
     a { color: #58a6ff; }
   </style>
 </head>
@@ -120,7 +120,7 @@
               {% for inc in incidents %}
               <tr>
                 <td>
-                  {{ inc.occurred_on }}
+                  {{ inc.occurred_on | eu_date }}
                   {% if loop.first %}<span class="badge-latest">latest</span>{% endif %}
                 </td>
                 <td>{{ inc.perpetrator }}</td>

@@ -29,6 +29,16 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 DB_PATH = str(INSTANCE_DIR / "incidents.db")
 
+
+@app.template_filter("eu_date")
+def eu_date_filter(value: str) -> str:
+    """Convert YYYY-MM-DD to DD/MM/YYYY for display."""
+    try:
+        return datetime.strptime(str(value), "%Y-%m-%d").strftime("%d/%m/%Y")
+    except (ValueError, TypeError):
+        return value or ""
+
+
 # ---------------------------------------------------------------------------
 # Database helpers
 # ---------------------------------------------------------------------------

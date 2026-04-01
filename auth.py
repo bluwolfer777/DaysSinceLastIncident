@@ -10,9 +10,9 @@ import ssl
 from ldap3 import ALL, SIMPLE, SUBTREE, Server, Connection, Tls
 from ldap3.core.exceptions import LDAPBindError, LDAPException
 
-LDAP_SERVER         = os.environ.get("LDAP_SERVER",        "samt.lan")
-LDAP_BASE_DN        = os.environ.get("LDAP_BASE_DN",       "dc=samt,dc=lan")
-LDAP_REQUIRED_GROUP = os.environ.get("LDAP_REQUIRED_GROUP", "GG_Sistemisti")
+LDAP_SERVER         = os.environ.get("LDAP_SERVER",        "ldap.example.com")
+LDAP_BASE_DN        = os.environ.get("LDAP_BASE_DN",       "dc=example,dc=com")
+LDAP_REQUIRED_GROUP = os.environ.get("LDAP_REQUIRED_GROUP", "IT_Administrators")
 LDAP_USE_SSL        = os.environ.get("LDAP_USE_SSL", "false").lower() == "true"
 
 
